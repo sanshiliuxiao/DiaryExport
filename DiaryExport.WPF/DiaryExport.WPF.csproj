@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+	  <OutputType>WinExe</OutputType>
+	  <TargetFrameworks>netcoreapp3.1;net472;</TargetFrameworks>
+    <UseWPF>true</UseWPF>
+  
+</PropertyGroup>
+
+	<ItemGroup Condition=" '$(TargetFramework)' == 'net472' ">
+		<PackageReference Include="Ookii.Dialogs.Wpf">
+			<Version>1.1.0</Version>
+		</PackageReference>
+	</ItemGroup>
+
+	<ItemGroup>
+    <ProjectReference Include="..\DiaryExport.Core\DiaryExport.Core.csproj" />
+    <ProjectReference Include="..\DiaryExport.ExportDiaryToFile\DiaryExport.ExportDiaryToFile.csproj" />
+  </ItemGroup>
+
+	<ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
+	  <PackageReference Include="Ookii.Dialogs.Wpf.NETCore">
+	    <Version>2.1.0</Version>
+	  </PackageReference>
+	</ItemGroup>
+
+</Project>
