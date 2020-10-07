@@ -46,12 +46,19 @@ namespace DiaryExport.Core
             T data;
             data = await Policy
                 .Handle<FlurlHttpException>(ex =>
-                    httpStatusCodesWorthRetrying.Contains((int)ex.Call.Response.StatusCode))
+                {
+                    if (ex.Call.Response == null)
+                    {
+                        return true;
+                    }
+
+                    return httpStatusCodesWorthRetrying.Contains((int) ex.Call.Response.StatusCode);
+                })
                 .WaitAndRetryAsync(new[]
                 {
                     TimeSpan.FromSeconds(1),
-                    TimeSpan.FromSeconds(2),
-                    TimeSpan.FromSeconds(3)
+                    TimeSpan.FromSeconds(3),
+                    TimeSpan.FromSeconds(6)
                 })
                 .ExecuteAsync(() =>
                 {

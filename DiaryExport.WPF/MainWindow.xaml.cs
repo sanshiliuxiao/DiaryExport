@@ -16,6 +16,7 @@ namespace DiaryExport.WPF
     /// </summary>
     public partial class MainWindow : Window
     {
+        private string messageTip = "";
         private bool blockMultipleClick = false;
         private string txtExportPath = string.Empty;
         private string jsonExportPath = string.Empty;
@@ -70,7 +71,6 @@ namespace DiaryExport.WPF
                 MessageBox.Show("请选择导出路径：");
                 return;
             }
-
             var email = Email.Text.Trim();
             var password = Password.Password.Trim();
             var count = 0; 
@@ -79,39 +79,64 @@ namespace DiaryExport.WPF
             var diaryInfoList = new ExportDiaryInfosModel();
             var diaryInfoListWithUserInfo = new ExportDiaryInfosWithUserInfoModel();
             var diaryExport = new Core.DiaryExport(email, password, count);
-            await diaryExport.Login();
 
-            if (diaryExport.LoginCheck)
+            try
             {
-                if (blockMultipleClick)
+
+                LoginTip.Text = "正在尝试登陆...";
+                await diaryExport.Login();
+                if (diaryExport.LoginCheck)
                 {
-                    MessageBox.Show("正在导出，请勿点击");
-                    return;
+                    if (blockMultipleClick)
+                    {
+                        MessageBox.Show("正在导出，请勿点击");
+                        return;
+                    }
+
+                    blockMultipleClick = true;
+                    LoginTip.Text = "登陆成功，准备导出";
+
+                    try
+                    {
+                        diaryInfoList = await diaryExport.ExportAllDiaryInfo(mainViewModel.AddItemToStatus);
+
+                        if (diaryInfoList != null && diaryInfoList.DiaryInfos.Count != 0)
+                        {
+                            var exportDiaryToTxt = new ExportDiaryToTxtFile(txtExportPath, diaryInfoList);
+                            exportDiaryToTxt.StartExport();
+
+                            var exportDiaryToJson = new ExportDiaryToJsonFile(jsonExportPath, diaryInfoList);
+                            exportDiaryToJson.StartExport();
+                        }
+
+                        blockMultipleClick = false;
+                        messageTip = "导出完毕";
+                        LoginTip.Text = messageTip;
+                        MessageBox.Show(messageTip);
+                    }
+                    catch (Exception exception)
+                    {
+                        messageTip = "网络中断或服务器拒绝连接";
+                        LoginTip.Text = messageTip;
+                        MessageBox.Show(messageTip);
+                    }
+                }
+                else
+                {
+                    blockMultipleClick = false;
+                    messageTip = "登陆失败，请检查账号密码及网络";
+                    LoginTip.Text = messageTip;
+                    MessageBox.Show(messageTip);
                 }
 
-                blockMultipleClick = true;
-
-                LoginTip.Text = "登陆成功，准备导出";
-                diaryInfoList = await diaryExport.ExportAllDiaryInfo(mainViewModel.AddItemToStatus);
-                
-                if (diaryInfoList != null && diaryInfoList.DiaryInfos.Count != 0)
-                {
-                    var exportDiaryToTxt = new ExportDiaryToTxtFile(txtExportPath, diaryInfoList);
-                    exportDiaryToTxt.StartExport();
-
-                    var exportDiaryToJson = new ExportDiaryToJsonFile(jsonExportPath, diaryInfoList);
-                    exportDiaryToJson.StartExport();
-                }
-
-                blockMultipleClick = false;
-                LoginTip.Text = "导出完毕";
-
             }
-            else
+            catch (Exception exception)
             {
-                LoginTip.Text = "登陆失败，请检查账号密码及网络";
+                messageTip = "登陆失败，请检查账号密码及网络";
+                LoginTip.Text = messageTip;
+                MessageBox.Show(messageTip);
             }
-
+            
         }
     }
 }
