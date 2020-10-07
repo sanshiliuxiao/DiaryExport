@@ -14,10 +14,13 @@
 
 项目中使用到的第三方包：
 
->  Ookii.Dialogs.Wpf
->  Newtonsoft.Json
->  Flurl.Http
->  Polly
+* `Ookii.Dialogs.Wpf`
+
+* `Newtonsoft.Json`
+
+* `Flurl.Http`
+
+* `Polly`
 
 ## 使用说明
 
