@@ -17,8 +17,6 @@ namespace DiaryExport.EFCore
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<UserInfo>().HasNoKey();
-            modelBuilder.Entity<DiaryInfo>().HasKey("Id");
         }
     }
 }

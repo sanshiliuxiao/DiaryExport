@@ -1,12 +1,14 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 
 namespace DiaryExport.Models
 {
     public class DiaryInfo
     {
+        [Key]
         public string Id { get; set; }
         [JsonProperty("deleteddate")]
         public string Deleteddate { get; set; }

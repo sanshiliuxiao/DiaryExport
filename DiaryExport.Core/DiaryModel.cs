@@ -19,7 +19,7 @@ namespace DiaryExport.Core
         public DateTime Ts { get; set; }
         public string Content { get; set; }
         public string Date_word { get; set; }
-        public string weather { get; set; }
+        public string Weather { get; set; }
         public DateTime Createddate { get; set; }
         public string Id { get; set; }
         public string Weekday { get; set; }

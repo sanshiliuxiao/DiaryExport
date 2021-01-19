@@ -2,11 +2,12 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-
+using System.ComponentModel.DataAnnotations;
 namespace DiaryExport.Models
 {
     public class UserInfo
     {
+        [Key]
         [JsonProperty("userid")]
         public string Id { get; set; }
         public string Name { get; set; }
@@ -18,6 +19,5 @@ namespace DiaryExport.Models
         public int WordCount { get; set; }
         public string Description { get; set; }
         public string Avatar { get; set; }
-        public List<DiaryInfo> DiaryInfos { get; set; } = new List<DiaryInfo>();
     }
 }

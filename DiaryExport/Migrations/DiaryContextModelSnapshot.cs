@@ -67,6 +67,9 @@ namespace DiaryExport.Migrations
 
             modelBuilder.Entity("DiaryExport.Models.UserInfo", b =>
                 {
+                    b.Property<string>("Id")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Avatar")
                         .HasColumnType("TEXT");
 
@@ -76,9 +79,6 @@ namespace DiaryExport.Migrations
                     b.Property<int>("DiaryCount")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("Id")
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("Name")
                         .HasColumnType("TEXT");
 
@@ -87,6 +87,8 @@ namespace DiaryExport.Migrations
 
                     b.Property<int>("WordCount")
                         .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
 
                     b.ToTable("UserInfos");
                 });

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace DiaryExport.Migrations
 {
-    public partial class Initial : Migration
+    public partial class Init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -19,9 +19,11 @@ namespace DiaryExport.Migrations
                     Space = table.Column<string>(type: "TEXT", nullable: true),
                     Ts = table.Column<DateTime>(type: "TEXT", nullable: false),
                     Content = table.Column<string>(type: "TEXT", nullable: true),
-                    Date_word = table.Column<string>(type: "TEXT", nullable: true),
-                    weather = table.Column<string>(type: "TEXT", nullable: true),
+                    DataWord = table.Column<string>(type: "TEXT", nullable: true),
+                    Weather = table.Column<string>(type: "TEXT", nullable: true),
+                    User = table.Column<string>(type: "TEXT", nullable: true),
                     Createddate = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Createdtime = table.Column<DateTime>(type: "TEXT", nullable: false),
                     Weekday = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
@@ -33,15 +35,17 @@ namespace DiaryExport.Migrations
                 name: "UserInfos",
                 columns: table => new
                 {
+                    Id = table.Column<string>(type: "TEXT", nullable: false),
                     Name = table.Column<string>(type: "TEXT", nullable: true),
-                    Useremail = table.Column<string>(type: "TEXT", nullable: true),
-                    Diary_count = table.Column<int>(type: "INTEGER", nullable: false),
-                    Word_count = table.Column<int>(type: "INTEGER", nullable: false),
-                    Desription = table.Column<string>(type: "TEXT", nullable: true),
+                    UserEmail = table.Column<string>(type: "TEXT", nullable: true),
+                    DiaryCount = table.Column<int>(type: "INTEGER", nullable: false),
+                    WordCount = table.Column<int>(type: "INTEGER", nullable: false),
+                    Description = table.Column<string>(type: "TEXT", nullable: true),
                     Avatar = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
+                    table.PrimaryKey("PK_UserInfos", x => x.Id);
                 });
         }
 

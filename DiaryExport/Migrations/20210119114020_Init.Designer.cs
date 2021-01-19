@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DiaryExport.Migrations
 {
     [DbContext(typeof(DiaryContext))]
-    [Migration("20210112141137_Initial")]
-    partial class Initial
+    [Migration("20210119114020_Init")]
+    partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -29,7 +29,10 @@ namespace DiaryExport.Migrations
                     b.Property<DateTime>("Createddate")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Date_word")
+                    b.Property<DateTime>("Createdtime")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DataWord")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Deleteddate")
@@ -50,10 +53,13 @@ namespace DiaryExport.Migrations
                     b.Property<DateTime>("Ts")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Weekday")
+                    b.Property<string>("User")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("weather")
+                    b.Property<string>("Weather")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Weekday")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -63,23 +69,28 @@ namespace DiaryExport.Migrations
 
             modelBuilder.Entity("DiaryExport.Models.UserInfo", b =>
                 {
+                    b.Property<string>("Id")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Avatar")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Desription")
+                    b.Property<string>("Description")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("Diary_count")
+                    b.Property<int>("DiaryCount")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Useremail")
+                    b.Property<string>("UserEmail")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("Word_count")
+                    b.Property<int>("WordCount")
                         .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
 
                     b.ToTable("UserInfos");
                 });
