@@ -10,7 +10,15 @@ namespace DiaryExport.ModelDtos
         public string Password { get; set; }
         public string Csrf { get; set; } = "ZcJkWtMdfyjBNKxp3ms0i8REkTJcSKw4";
         public string Token { get; set; } = "token ";
-        public int Count { get; set; } = 0;
-        public int ExportCount { get; set; } = int.MaxValue; 
+        public int ExportCount { get; set; } = int.MaxValue;
+        public LoginModel():this("", "")
+        {
+
+        }
+        public LoginModel(string email, string password)
+        {
+            Email = email;
+            Password = password;
+        }
     }
 }

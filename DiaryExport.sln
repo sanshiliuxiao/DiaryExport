@@ -3,14 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30523.141
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiaryExport.Core", "DiaryExport.Core\DiaryExport.Core.csproj", "{D8873238-A5A9-4D3F-94E9-A64F405F2FFB}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiaryExport.Console", "DiaryExport.Console\DiaryExport.Console.csproj", "{C297403A-47A7-430E-A6DA-BE0B575744D5}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiaryExport.ExportDiaryToFile", "DiaryExport.ExportDiaryToFile\DiaryExport.ExportDiaryToFile.csproj", "{6753E2FF-055C-45E3-A9E4-E1095E771264}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiaryExport.WPF", "DiaryExport.WPF\DiaryExport.WPF.csproj", "{36942166-8E9C-40E7-AD4F-9C135D122DEE}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiaryExport", "DiaryExport\DiaryExport.csproj", "{39AB2FC9-01B0-43CB-83E2-902AB82F9CF1}"
 EndProject
 Global
@@ -19,22 +11,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{D8873238-A5A9-4D3F-94E9-A64F405F2FFB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D8873238-A5A9-4D3F-94E9-A64F405F2FFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D8873238-A5A9-4D3F-94E9-A64F405F2FFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D8873238-A5A9-4D3F-94E9-A64F405F2FFB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C297403A-47A7-430E-A6DA-BE0B575744D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C297403A-47A7-430E-A6DA-BE0B575744D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C297403A-47A7-430E-A6DA-BE0B575744D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C297403A-47A7-430E-A6DA-BE0B575744D5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6753E2FF-055C-45E3-A9E4-E1095E771264}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6753E2FF-055C-45E3-A9E4-E1095E771264}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6753E2FF-055C-45E3-A9E4-E1095E771264}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6753E2FF-055C-45E3-A9E4-E1095E771264}.Release|Any CPU.Build.0 = Release|Any CPU
-		{36942166-8E9C-40E7-AD4F-9C135D122DEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{36942166-8E9C-40E7-AD4F-9C135D122DEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{36942166-8E9C-40E7-AD4F-9C135D122DEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{36942166-8E9C-40E7-AD4F-9C135D122DEE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{39AB2FC9-01B0-43CB-83E2-902AB82F9CF1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{39AB2FC9-01B0-43CB-83E2-902AB82F9CF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{39AB2FC9-01B0-43CB-83E2-902AB82F9CF1}.Release|Any CPU.ActiveCfg = Release|Any CPU

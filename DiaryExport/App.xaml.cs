@@ -19,11 +19,14 @@ namespace DiaryExport
         {
             try
             {
-                using var db = new DiaryContext();
-                if (db.Database.GetPendingMigrations().Any())
+                using (var db = new DiaryContext())
                 {
-                    db.Database.Migrate();
+                    if (db.Database.GetPendingMigrations().Any())
+                    {
+                        db.Database.Migrate();
+                    }
                 }
+                
             }
             catch
             {

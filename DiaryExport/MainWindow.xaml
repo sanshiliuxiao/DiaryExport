@@ -7,18 +7,20 @@
         xmlns:local="clr-namespace:DiaryExport"
         mc:Ignorable="d"
         Name="MainNode"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
         Title="你的日记导出工具" Height="650" Width="900">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="12*"></ColumnDefinition>
-            <ColumnDefinition Width="10*"></ColumnDefinition>
+            <ColumnDefinition Width="14*"></ColumnDefinition>
+            <ColumnDefinition Width="9*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
         <Grid Grid.Column="0">
             <Grid.RowDefinitions>
-                <RowDefinition  Height="220"/>
-                <RowDefinition Height="140"/>
+                <RowDefinition  Height="180"/>
+                <RowDefinition Height="180"/>
                 <RowDefinition Height="220"/>
-                <RowDefinition Height="60"/>
+                <RowDefinition Height="120"/>
             </Grid.RowDefinitions>
             <StackPanel Grid.Row="0">
                 <StackPanel Margin="10" Orientation="Horizontal" VerticalAlignment="Center" Height="30">
@@ -28,11 +30,6 @@
                 <StackPanel Margin="10" Orientation="Horizontal" VerticalAlignment="Center" Height="30">
                     <Label Content="输入密码" VerticalAlignment="Top" Height="30" Padding="0" Margin="10 0 10 0" FontSize="14" />
                     <PasswordBox Helpers:PasswordBoxHelper.Attach="True" Helpers:PasswordBoxHelper.Password="{Binding Path=LoginModel.Password,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Width="280" VerticalAlignment="Center" Height="30" FontSize="20"></PasswordBox>
-                </StackPanel>
-                <StackPanel Margin="10" Orientation="Horizontal" VerticalAlignment="Center" Height="30">
-                    <Label Content="导出数量" VerticalAlignment="Top" Height="30" Padding="0" Margin="10 0 10 0" FontSize="14" />
-                    <TextBox  Text="{Binding LoginModel.Count}" Width="160" VerticalAlignment="Center" TextAlignment="Left" Height="30" FontSize="20"></TextBox>
-                    <TextBlock  FontSize="14"  Margin="10 6 0 0" Text="0 代表全部导出" Width="100" />
                 </StackPanel>
                 <StackPanel HorizontalAlignment="Left" Margin="20" Orientation="Vertical" VerticalAlignment="Center" Height="220">
                     <StackPanel Orientation="Horizontal">
@@ -68,11 +65,15 @@
             </Grid>
             <StackPanel Grid.Row="2" Margin="10">
                 <StackPanel Orientation="Vertical" VerticalAlignment="Center">
-                    <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
-                        <Button Width="140" Height="40"  Margin="10"  VerticalAlignment="Center" Command="{Binding ReExportSqliteCommand}">重新导出至 Sqlite 数据库</Button>
-                        <Button Width="140" Height="40"  Margin="10"  VerticalAlignment="Center" Command="{Binding CoExportSqliteCommand}">增量导出至 Sqlite 数据库</Button>
-                    </StackPanel>
+
                     <StackPanel Margin="10" Orientation="Horizontal">
+                        <TextBlock  VerticalAlignment="Center" FontSize="10">
+                            <Run>正在导出：</Run>
+                            <Run Text="{Binding CurrentExportDiaryCount}"></Run>
+                            <Run>  篇</Run>
+                        </TextBlock>
+
+                        <TextBlock VerticalAlignment="Center" Margin="10 0">/</TextBlock>
                         <TextBlock VerticalAlignment="Center" FontSize="10">
                             <Run>已导出：</Run>
                             <Run Text="{Binding ExportedCount}"></Run>
@@ -80,19 +81,39 @@
                         </TextBlock>
                         <TextBlock VerticalAlignment="Center" Margin="10 0">/</TextBlock>
                         <TextBlock  VerticalAlignment="Center" FontSize="10">
-                            <Run>共计：</Run>
-                            <Run Text="{Binding AllExportCount}"></Run>
+                            <Run>含删除：</Run>
+                            <Run Text="{Binding DeletedCount}"></Run>
+                            <Run>  篇</Run>
+                        </TextBlock>
+
+                        <TextBlock VerticalAlignment="Center" Margin="10 0">/</TextBlock>
+                        <TextBlock  VerticalAlignment="Center" FontSize="10">
+                            <Run>最终：</Run>
+                            <Run Text="{Binding FinallyCount}"></Run>
+                            <Run>  篇</Run>
+                        </TextBlock>
+                        <TextBlock VerticalAlignment="Center" Margin="10 0">/</TextBlock>
+                        <TextBlock  VerticalAlignment="Center" FontSize="10">
+                            <Run>实际：</Run>
+                            <Run Text="{Binding ExistedCount}"></Run>
                             <Run>  篇</Run>
                         </TextBlock>
                     </StackPanel>
+                    <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
+                        <Button Width="100" Height="40"  Margin="5"  VerticalAlignment="Center" Command="{Binding ReExportSqliteCommand}">重新导出</Button>
+                        <Button Width="100" Height="40"  Margin="5"  VerticalAlignment="Center" Command="{Binding InExportSqliteCommand}">增量导出</Button>
+                        <Button Width="100" Height="40"  Margin="5"  VerticalAlignment="Center" Command="{Binding CoExportSqliteCommand}">继续上次导出</Button>
+                        <Button Width="100" Height="40"  Margin="5"  VerticalAlignment="Center" Command="{Binding BrExportSqliteCommand}">手动终止导出</Button>
+                    </StackPanel>
                     <StackPanel  HorizontalAlignment="Left">
-                        <StackPanel Orientation="Horizontal">
-                            <Button Width="80" Height="40" Margin="5" Command="{Binding SelectExportFolderCommand}">选择导出目录</Button>
+                        <StackPanel HorizontalAlignment="Left" Margin="10">
                             <TextBlock Name="ExportPath" FontSize="10" VerticalAlignment="Center" Text="{Binding ExportPath}" Width="300" />
                         </StackPanel>
-                        <StackPanel HorizontalAlignment="Left">
-                            <Button Width="80" Height="40"  Margin="5"  VerticalAlignment="Center" Command="{Binding ExportToFileCommand}">导出到文件</Button>
+                        <StackPanel Orientation="Horizontal">
+                            <Button Width="80" Height="40" Margin="10" Command="{Binding SelectExportFolderCommand}">选择导出目录</Button>
+                            <Button Width="80" Height="40"  Margin="10"  VerticalAlignment="Center" Command="{Binding ExportToFileCommand}">导出到文件</Button>
                         </StackPanel>
+                  
                     </StackPanel>
 
                 </StackPanel>

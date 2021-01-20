@@ -28,15 +28,19 @@ namespace DiaryExport
         public MainWindow()
         {
             InitializeComponent();
-
-            this.MainNode.DataContext = new MainViewModel();
+            var mainViewModel = new MainViewModel();
+            mainViewModel.AutoScrollEvent += AutoScroll;
+            this.MainNode.DataContext = mainViewModel;
         }
         /// <summary>
         /// 滚动条自动滚动
         /// </summary>
         private void AutoScroll()
         {
-            StatusList.ScrollIntoView(StatusList.Items[^1]);
+            if (StatusList.Items.Count != 0)
+            {
+                StatusList.ScrollIntoView(StatusList.Items[StatusList.Items.Count - 1]);
+            }
         }
 
     }

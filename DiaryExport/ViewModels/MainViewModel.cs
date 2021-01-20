@@ -3,14 +3,16 @@ using DiaryExport.EFCore;
 using DiaryExport.ModelDtos;
 using DiaryExport.Models;
 using DiaryExport.Servies;
+using Newtonsoft.Json;
 using Ookii.Dialogs.Wpf;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
@@ -33,7 +35,7 @@ namespace DiaryExport.ViewModels
 
         }
         private readonly DbServices _dbServices;
-        private readonly ExportDiaryServies _exportDiaryServies;
+        private readonly ExportDiaryServices _exportDiaryServies;
         public UserModel _userModel = new UserModel();
         public UserModel UserModel
         {
@@ -85,22 +87,59 @@ namespace DiaryExport.ViewModels
             }
         }
 
-        private int _allExportCount = 0;
-        public int AllExportCount
+        private int _deletedCount = 0;
+        public int DeletedCount
         {
-            get { return _allExportCount; }
-            set 
+            get { return _deletedCount; }
+            set
             {
-                _allExportCount = value;
-                OnPropertyChanged(nameof(AllExportCount));
+                _deletedCount = value;
+                OnPropertyChanged(nameof(DeletedCount));
             }
         }
+        private int _existedCount = 0;
+        public int ExistedCount
+        {
+            get { return _existedCount; }
+            set
+            {
+                _existedCount = value;
+                OnPropertyChanged(nameof(ExistedCount));
+            }
+        }
+        public int _finallyCount = 0;
+        public int FinallyCount
+        {
+            get { return _finallyCount; }
+            set
+            {
+                _finallyCount = value;
+                OnPropertyChanged(nameof(FinallyCount));
+            }
+        }
+
+        private DiaryInfo _currentExportDiaryInfo = new DiaryInfo();
+        private int _currentExportDiaryCount = 0;
+        public int CurrentExportDiaryCount
+        {
+            get { return _currentExportDiaryCount; }
+            set
+            {
+                _currentExportDiaryCount = value;
+                OnPropertyChanged(nameof(CurrentExportDiaryCount));
+            }
+        }
+
+        public bool _ifToBreakExportDiary ;
+        public bool _ifExporting;
 
         public ICommand LoginCommand { get; set; }
         public ICommand SelectExportFolderCommand { get; set; }
         public ICommand ExportToFileCommand { get; set; }
         public ICommand ReExportSqliteCommand { get; set; }
-        public ICommand CoExportSqliteCommand { get; set; }
+        public ICommand InExportSqliteCommand { get; set; }
+        public RelayCommand CoExportSqliteCommand { get; private set; }
+        public ICommand BrExportSqliteCommand { get; set; }
 
         private ObservableCollection<string> _exportDiaryStatus = new ObservableCollection<string> { };
         public ObservableCollection<string> ExportDiaryStatus
@@ -114,55 +153,292 @@ namespace DiaryExport.ViewModels
         }
         public event PropertyChangedEventHandler PropertyChanged;
 
+
+        public event Action AutoScrollEvent;
+
         public MainViewModel()
         {
-            LoginModel = new LoginModel
-            {
-                Email = "",
-                Password = "",
-                ExportCount = int.MaxValue,
-                Count = 0,
-            };
+            LoginModel = new LoginModel(string.Empty, string.Empty);
             _dbServices = new DbServices(new DiaryContext());
-            _exportDiaryServies = new ExportDiaryServies(_loginModel);
+            _exportDiaryServies = new ExportDiaryServices(_loginModel);
             _exportDiaryServies.LoginEvent += (tip) => { LoginTip = tip; };
-            _exportDiaryServies.ExportDiaryStatusEvent += (tip) =>{ Application.Current.Dispatcher.Invoke(() => { ExportDiaryStatus.Add(tip); }); };
+            _exportDiaryServies.ExportDiaryStatusEvent += (tip) =>{ Application.Current.Dispatcher.Invoke(() => { ExportDiaryStatusChange(tip); }); };
             LoginCommand = new RelayCommand(ToLogin);
             SelectExportFolderCommand = new RelayCommand(SelectExportFolder);
             ExportToFileCommand = new RelayCommand(ExportToFile);
             ReExportSqliteCommand = new RelayCommand(ReExportSqlite);
+            InExportSqliteCommand = new RelayCommand(InExportSqlite);
             CoExportSqliteCommand = new RelayCommand(CoExportSqlite);
+            BrExportSqliteCommand = new RelayCommand(BrExportSqlite);
         }
 
-        private void CoExportSqlite()
+        private void BrExportSqlite()
+        {
+            _ifToBreakExportDiary = true;
+            RevExporting();
+        }
+        private void BrRevExportSqlite()
+        {
+            _ifToBreakExportDiary = false;
+        }
+        private void Exporting()
+        {
+            _ifExporting = true;
+        }
+        private void RevExporting()
+        {
+            _ifExporting = false;
+        }
+
+        private void ExportDiaryStatusChange(string tip)
+        {
+            ExportDiaryStatus.Add(tip);
+            AutoScrollEvent?.Invoke();
+        }
+        private void ExportDiaryStatusClear()
+        {
+            ExportDiaryStatus.Clear();
+            AutoScrollEvent?.Invoke();
+        }
+        private async void InExportSqlite()
         {
             if (!_ifLogined)
             {
-                ExportDiaryStatus.Add("请先登陆");
+                ExportDiaryStatusChange("请先登陆");
                 MessageBox.Show("请先登陆");
+                return;
             }
-            // 获取到属于 他的日记数量 和 最新的日记
+            if (_ifExporting)
+            {
+                MessageBox.Show("请先手动终止，再次点击");
+                return;
+            }
+            Exporting();
+            ExportDiaryStatusClear();
+
+
+            // 获取到 最新一篇日记 // 获取到数据库里的第一篇日记,进行 id 比对
+            var latestdiaryModel = await _exportDiaryServies.GetLatestDiary();
+            var latestDairyModelFromSqlite = await _dbServices.GetLatestDiary(UserModel.UserConfig.Id);
+
+            if (latestdiaryModel.Diary.Id == latestDairyModelFromSqlite.Id)
+            {
+                ExportDiaryStatusChange("最新日记 ID 比对成功， 无需增量更新");
+                RevExporting();
+            }
+            else
+            {
+                _currentExportDiaryInfo = latestdiaryModel.Diary;
+                await _dbServices.AddOneDiaryInfoAsync(_currentExportDiaryInfo);
+                ExportDiaryStatusChange("保存最新日记，正在增量导出");
+                do
+                {
+                    if (_ifToBreakExportDiary)
+                    {
+                        ExportDiaryStatusChange($"手动终止导出");
+                        BrRevExportSqlite();
+                        return;
+                    }
+                    DiaryModel diaryModel = await _exportDiaryServies.GetDiaryPrevById(_currentExportDiaryInfo.Id);
+
+
+                    if (diaryModel.Diary.Id == latestDairyModelFromSqlite.Id)
+                    {
+                        ExportDiaryStatusChange($"增量更新完成");
+                        RevExporting();
+                        return;
+                    }
+
+                    if (diaryModel == null || diaryModel.Diary == null)
+                    {
+
+                        ExportDiaryStatusChange("导出结束");
+                        RevExporting();
+                        return;
+                    }
+                    _currentExportDiaryInfo = diaryModel.Diary;
+                    CurrentExportDiaryCount++;
+                    await _dbServices.AddOneDiaryInfoAsync(_currentExportDiaryInfo);
+                    ExportedCount = _dbServices.GetCurrentUserInSqliteDiaryCount(UserModel.UserConfig.Id);
+                    DeletedCount = _dbServices.GetCurrentUserInSqliteFilteDeletedDiaryCount(UserModel.UserConfig.Id, "deleted");
+                    FinallyCount = ExportedCount - DeletedCount;
+                    ExportDiaryStatusChange($"正在导出第 {CurrentExportDiaryCount} 篇， 累计导出 {ExportedCount} 篇");
+                    await Task.Delay(new TimeSpan(0, 0, 0, 0, 500));
+
+
+                } while (_currentExportDiaryInfo != null && CurrentExportDiaryCount < LoginModel.ExportCount);
+            }
+
+
         }
 
-        private void ReExportSqlite()
+        private async void ReExportSqlite()
+        {
+
+            if (!_ifLogined)
+            {
+                ExportDiaryStatusChange("请先登陆");
+                MessageBox.Show("请先登陆");
+                return;
+            }
+            if (_ifExporting)
+            {
+                MessageBox.Show("请先手动终止，再次点击");
+                return;
+            }
+            Exporting();
+            ExportDiaryStatusClear();
+            if (ExportedCount > 0)
+            {
+                MessageBoxResult dr = MessageBox.Show("此操作将会清空已导出的日记，确认继续？", "警告", MessageBoxButton.OKCancel, MessageBoxImage.Question);
+                if (dr != MessageBoxResult.OK)
+                {
+                    RevExporting();
+                    BrRevExportSqlite();
+                    return;
+                }
+                await _dbServices.DeleteAllDiaryInfoAsync(UserModel.UserConfig.Id);
+            }
+            do
+            {
+                if (_ifToBreakExportDiary)
+                {
+                    ExportDiaryStatusChange($"手动终止导出");
+                    BrRevExportSqlite();
+                    break;
+                }
+                DiaryModel diaryModel;
+                if (CurrentExportDiaryCount == 0)
+                {
+                    diaryModel = await _exportDiaryServies.GetLatestDiary();
+                }
+                else
+                {
+                    diaryModel = await _exportDiaryServies.GetDiaryPrevById(_currentExportDiaryInfo.Id);
+                }
+
+                if (diaryModel == null || diaryModel.Diary == null)
+                {
+                    ExportDiaryStatusChange("导出结束");
+                    RevExporting();
+                    return;
+                }
+                _currentExportDiaryInfo = diaryModel.Diary;
+                CurrentExportDiaryCount++;
+                await _dbServices.AddOneDiaryInfoAsync(_currentExportDiaryInfo);
+                ExportedCount = _dbServices.GetCurrentUserInSqliteDiaryCount(UserModel.UserConfig.Id);
+                DeletedCount = _dbServices.GetCurrentUserInSqliteFilteDeletedDiaryCount(UserModel.UserConfig.Id, "deleted");
+                FinallyCount = ExportedCount - DeletedCount;
+                ExportDiaryStatusChange($"正在导出第 {CurrentExportDiaryCount} 篇， 累计导出 {ExportedCount} 篇");
+                await Task.Delay(new TimeSpan(0, 0, 0, 0, 500));
+            } while (_currentExportDiaryInfo != null && CurrentExportDiaryCount < LoginModel.ExportCount);
+
+        }
+        private async void CoExportSqlite()
+        {
+            // 继续上此的任务
+            if (!_ifLogined)
+            {
+                ExportDiaryStatusChange("请先登陆");
+                MessageBox.Show("请先登陆");
+                return;
+            }
+            if (_ifExporting)
+            {
+                MessageBox.Show("请先手动终止，再次点击");
+                return;
+            }
+            Exporting();
+            ExportDiaryStatusClear();
+            // 获取到数据库里的日期最早的一篇日记
+            var latestDairyModelFromSqlite = await _dbServices.GetOldestDiary(UserModel.UserConfig.Id);
+            if (latestDairyModelFromSqlite != null)
+            {
+                DiaryInfo _currentExportDiaryInfo = latestDairyModelFromSqlite;
+                do
+                {
+                    if (_ifToBreakExportDiary)
+                    {
+                        ExportDiaryStatusChange($"手动终止导出");
+                        BrRevExportSqlite();
+                        return;
+                    }
+                    DiaryModel diaryModel = await _exportDiaryServies.GetDiaryPrevById(_currentExportDiaryInfo.Id);
+                    if (diaryModel == null || diaryModel.Diary == null)
+                    {
+                        ExportDiaryStatusChange("导出结束");
+                        RevExporting();
+                        return;
+                    }
+                    _currentExportDiaryInfo = diaryModel.Diary;
+                    CurrentExportDiaryCount++;
+                    await _dbServices.AddOneDiaryInfoAsync(_currentExportDiaryInfo);
+                    ExportedCount = _dbServices.GetCurrentUserInSqliteDiaryCount(UserModel.UserConfig.Id);
+                    DeletedCount = _dbServices.GetCurrentUserInSqliteFilteDeletedDiaryCount(UserModel.UserConfig.Id, "deleted");
+                    FinallyCount = ExportedCount - DeletedCount;
+                    ExportDiaryStatusChange($"正在导出第 {CurrentExportDiaryCount} 篇， 累计导出 {ExportedCount} 篇");
+                    await Task.Delay(new TimeSpan(0, 0, 0, 0, 500));
+                } while (_currentExportDiaryInfo != null);
+            }
+        }
+        private async void ExportToFile()
         {
             if (!_ifLogined)
             {
-                ExportDiaryStatus.Add("请先登陆");
+                ExportDiaryStatusChange("请先登陆");
                 MessageBox.Show("请先登陆");
+                return;
             }
-            // 导出至 Sqlite 
-        }
-
-        private void ExportToFile()
-        {
+            if (_ifExporting)
+            {
+                MessageBox.Show("请先手动终止，再次点击");
+                return;
+            }
             var count = _dbServices.GetCurrentUserInSqliteDiaryCount(UserModel.UserConfig.Id);
             if (count == 0)
             {
                 MessageBox.Show("请先导出至 Sqlite 数据库");
                 return;
             }
-            // 获取所有数据并导出到指定文件夹
+            // 获取所有数据并导出到指定文件夹 
+
+            var exportJsonFilePath = $@"{_exportPath}\exportDiary.json";
+            var exportTxtFilePath = $@"{_exportPath}\exportDiary.txt";
+            var data = await _dbServices.GetCurrentUserInSqliteAllData(UserModel.UserConfig.Id);
+
+            ExportDiaryToJsonFile(exportJsonFilePath, data);
+            ExportDiaryToTxtFile(exportTxtFilePath, data);
+
+            ExportDiaryStatusChange("已导出为 JSON 文件");
+
+            ExportDiaryStatusChange("已导出为 TXT 文件");
+        }
+
+        private void ExportDiaryToJsonFile(string path, List<DiaryInfo> data)
+        {
+
+            string json = JsonConvert.SerializeObject(data, Formatting.Indented);
+            File.WriteAllText(path, json, Encoding.UTF8);
+        }
+        private void ExportDiaryToTxtFile(string path, List<DiaryInfo> data)
+        {
+            var txt = "";
+            foreach (var diaryInfo in data)
+            {
+                if (diaryInfo.Deleteddate.Equals("None") || !diaryInfo.Content.Equals("deleted"))
+                {
+                    txt += Environment.NewLine;
+                    txt += $"标题: {diaryInfo.Title}" + Environment.NewLine;
+                    txt += $"创建日期: {diaryInfo.Createddate}" + Environment.NewLine;
+                    txt += $"更新日期: {diaryInfo.Ts}" + Environment.NewLine;
+                    txt += $"内容： " + Environment.NewLine + Environment.NewLine;
+                    txt += diaryInfo.Content + Environment.NewLine + Environment.NewLine;
+                    txt += "----------我是分隔符----------" + Environment.NewLine;
+                    txt += Environment.NewLine;
+                }
+
+            }
+            File.WriteAllText(path, txt, Encoding.UTF8);
         }
 
         private void SelectExportFolder()
@@ -176,21 +452,13 @@ namespace DiaryExport.ViewModels
 
         public async void ToLogin()
         {
-            if (LoginModel.Count != 0)
-            {
-                LoginModel.ExportCount = LoginModel.Count;
-            }
-            else
-            {
-                LoginModel.ExportCount = int.MaxValue;
-            }
             if (LoginModel.Email.Equals(string.Empty) || LoginModel.Password.Equals(string.Empty))
             {
                 MessageBox.Show("请输入账号密码");
                 return;
             }
 
-            ExportDiaryStatus.Add("正在登陆中...");
+            ExportDiaryStatusChange("正在登陆中...");
             LoginTip = "正在登陆中...";
 
             _exportDiaryServies.ResetTryCount();
@@ -202,16 +470,21 @@ namespace DiaryExport.ViewModels
             }
             if (UserModel.UserConfig != null)
             {
-                var curUser = UserModel.UserConfig;
+                ExportedCount = _dbServices.GetCurrentUserInSqliteDiaryCount(UserModel.UserConfig.Id);
+                DeletedCount = _dbServices.GetCurrentUserInSqliteFilteDeletedDiaryCount(UserModel.UserConfig.Id,"deleted");
+                FinallyCount = ExportedCount - DeletedCount;
+                ExistedCount = UserModel.UserConfig.DiaryCount;
+                CurrentExportDiaryCount = 0;
                 _ifLogined = true;
                 var user = _dbServices.GetUserInfoById(UserModel.UserConfig.Id);
                 if (user == null)
                 {
-                    await _dbServices.AddOneUserInfoAsync(curUser);
-                    ExportDiaryStatus.Add("用户信息已存入 SQLite 数据库");
+                    await _dbServices.AddOneUserInfoAsync(UserModel.UserConfig);
+                    ExportDiaryStatusChange("用户信息已存入 SQLite 数据库");
                 }
                 else
                 {
+                    var curUser = UserModel.UserConfig;
                     user.Id = curUser.Id;
                     user.Name = curUser.Name;
                     user.UserEmail = curUser.UserEmail;
@@ -221,7 +494,6 @@ namespace DiaryExport.ViewModels
                     user.DiaryCount = user.DiaryCount;
                     await _dbServices.UpdateOneUserInfoAsync(user);
                 }
-                AllExportCount = user.DiaryCount;
                 ExportedCount = _dbServices.GetCurrentUserInSqliteDiaryCount(user.Id);
             }
         }
