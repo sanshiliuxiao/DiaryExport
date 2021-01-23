@@ -100,7 +100,7 @@
                         </TextBlock>
                     </StackPanel>
                     <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
-                        <Button Width="100" Height="40"  Margin="5"  VerticalAlignment="Center" Command="{Binding ReExportSqliteCommand}">重新导出</Button>
+                        <Button Width="100" Height="40"  Margin="5"  VerticalAlignment="Center" Command="{Binding ReExportSqliteCommand}">开始/重新导出</Button>
                         <Button Width="100" Height="40"  Margin="5"  VerticalAlignment="Center" Command="{Binding InExportSqliteCommand}">增量导出</Button>
                         <Button Width="100" Height="40"  Margin="5"  VerticalAlignment="Center" Command="{Binding CoExportSqliteCommand}">继续上次导出</Button>
                         <Button Width="100" Height="40"  Margin="5"  VerticalAlignment="Center" Command="{Binding BrExportSqliteCommand}">手动终止导出</Button>

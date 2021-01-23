@@ -174,8 +174,12 @@ namespace DiaryExport.ViewModels
 
         private void BrExportSqlite()
         {
-            _ifToBreakExportDiary = true;
-            RevExporting();
+            MessageBoxResult dr = MessageBox.Show("是否终止", "警告", MessageBoxButton.OKCancel, MessageBoxImage.Question);
+            if (dr == MessageBoxResult.OK)
+            {
+                _ifToBreakExportDiary = true;
+                RevExporting();
+            }
         }
         private void BrRevExportSqlite()
         {
@@ -253,6 +257,7 @@ namespace DiaryExport.ViewModels
                     {
 
                         ExportDiaryStatusChange("导出结束");
+                        MessageBox.Show("导出结束");
                         RevExporting();
                         return;
                     }
@@ -320,6 +325,7 @@ namespace DiaryExport.ViewModels
                 if (diaryModel == null || diaryModel.Diary == null)
                 {
                     ExportDiaryStatusChange("导出结束");
+                    MessageBox.Show("导出结束");
                     RevExporting();
                     return;
                 }
@@ -367,6 +373,7 @@ namespace DiaryExport.ViewModels
                     if (diaryModel == null || diaryModel.Diary == null)
                     {
                         ExportDiaryStatusChange("导出结束");
+                        MessageBox.Show("导出结束");
                         RevExporting();
                         return;
                     }
@@ -412,6 +419,10 @@ namespace DiaryExport.ViewModels
             ExportDiaryStatusChange("已导出为 JSON 文件");
 
             ExportDiaryStatusChange("已导出为 TXT 文件");
+
+            MessageBox.Show($"已导出: {_exportPath}");
+
+            AutoScrollEvent?.Invoke();
         }
 
         private void ExportDiaryToJsonFile(string path, List<DiaryInfo> data)
