@@ -137,5 +137,45 @@ namespace DiaryExport.Servies
             }
 
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="date">eg: 2021-01-24</param>
+        /// <returns></returns>
+        public async Task<DiaryModel> GetDiaryByDate(string date)
+        {
+            try
+            {
+                var diaryModel = await new Flurl.Url(_baseUrl)
+                                            .AppendPathSegment($"/diary/")
+                                            .SetQueryParams(new { date=date })
+                                            .WithHeader("auth", _loginModel.Token)
+                                            .GetAsync()
+                                            .ReceiveJson<DiaryModel>();
+                if (diaryModel.Diary != null)
+                {
+                    ExportDiaryStatusEvent?.Invoke($"获取日记成功 date:{date} id: {diaryModel.Diary.Id}");
+
+                }
+                ResetTryCount();
+                return diaryModel;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                _currentTryCount++;
+                ExportDiaryStatusEvent?.Invoke($"获取上一篇日记失败...正在 {_currentTryCount} 尝试");
+                await Task.Delay(_currentTryCount * 1000);
+
+                if (_currentTryCount < _maxTryCount)
+                {
+                    return await GetDiaryByDate(date);
+                }
+                ExportDiaryStatusEvent?.Invoke($"获取上一篇日记失败...终止请求");
+                ResetTryCount();
+                return null;
+            }
+        }
     }
 }

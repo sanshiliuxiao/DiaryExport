@@ -17,55 +17,68 @@
         </Grid.ColumnDefinitions>
         <Grid Grid.Column="0">
             <Grid.RowDefinitions>
-                <RowDefinition  Height="180"/>
-                <RowDefinition Height="180"/>
-                <RowDefinition Height="220"/>
+                <RowDefinition  Height="120"/>
                 <RowDefinition Height="120"/>
+                <RowDefinition Height="120"/>
+                <RowDefinition Height="80"/>
+                <RowDefinition Height="120"/>
+                <RowDefinition Height="100"/>
             </Grid.RowDefinitions>
             <StackPanel Grid.Row="0">
-                <StackPanel Margin="10" Orientation="Horizontal" VerticalAlignment="Center" Height="30">
-                    <Label Content="输入邮箱" VerticalAlignment="Top" Height="30" Padding="0" Margin="10 0 10 0" FontSize="14" />
-                    <TextBox Text="{Binding LoginModel.Email}" Width="280" VerticalAlignment="Center" TextAlignment="Left" Height="30" FontSize="20"></TextBox>
-                </StackPanel>
-                <StackPanel Margin="10" Orientation="Horizontal" VerticalAlignment="Center" Height="30">
-                    <Label Content="输入密码" VerticalAlignment="Top" Height="30" Padding="0" Margin="10 0 10 0" FontSize="14" />
-                    <PasswordBox Helpers:PasswordBoxHelper.Attach="True" Helpers:PasswordBoxHelper.Password="{Binding Path=LoginModel.Password,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Width="280" VerticalAlignment="Center" Height="30" FontSize="20"></PasswordBox>
-                </StackPanel>
-                <StackPanel HorizontalAlignment="Left" Margin="20" Orientation="Vertical" VerticalAlignment="Center" Height="220">
-                    <StackPanel Orientation="Horizontal">
-                        <Button Name="StartButton" Width="80" Height="40" VerticalAlignment="Center" Command="{Binding LoginCommand}">登陆账号</Button>
-                        <TextBlock Margin="10" FontSize="12" VerticalAlignment="Center"  Width="180" Text="{Binding LoginTip}"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="9*"/>
+                        <ColumnDefinition Width="4*"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                        <StackPanel Margin="10" Orientation="Horizontal" VerticalAlignment="Center" Height="30">
+                            <Label Content="输入邮箱" VerticalAlignment="Top" Height="30" Padding="0" Margin="10 0 10 0" FontSize="14" />
+                            <TextBox Text="{Binding LoginModel.Email}" Width="270" VerticalAlignment="Center" TextAlignment="Left" Height="30" FontSize="20"></TextBox>
+                        </StackPanel>
+                        <StackPanel Margin="10" Orientation="Horizontal" VerticalAlignment="Center" Height="30">
+                            <Label Content="输入密码" VerticalAlignment="Top" Height="30" Padding="0" Margin="10 0 10 0" FontSize="14" />
+                            <PasswordBox Helpers:PasswordBoxHelper.Attach="True" Helpers:PasswordBoxHelper.Password="{Binding Path=LoginModel.Password,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Width="270" VerticalAlignment="Center" Height="30" FontSize="20"></PasswordBox>
+                        </StackPanel>
                     </StackPanel>
-                </StackPanel>
+                    <StackPanel Grid.Column="1" HorizontalAlignment="Left">
+                        <StackPanel HorizontalAlignment="Left" Margin="20" Orientation="Vertical" VerticalAlignment="Center" Height="220">
+                            <StackPanel Orientation="Vertical">
+                                <Button Name="StartButton" Width="80" Height="40" VerticalAlignment="Center" Command="{Binding LoginCommand}">登陆账号</Button>
+                                <TextBlock Margin="20" FontSize="12" VerticalAlignment="Center"  Width="180" Text="{Binding LoginTip}"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
             </StackPanel>
-
-            <Grid Grid.Row="1" Margin="20 0">
+            <Grid Grid.Row="1" Margin="20 20">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                <TextBlock Grid.Row="0" Grid.Column="0" Text="昵称"/>
-                <TextBlock Grid.Row="0" Grid.Column="1" Text="邮箱"/>
-                <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding Path=UserModel.UserConfig.Name}"/>
-                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Path=UserModel.UserConfig.UserEmail}"/>
-                <TextBlock Grid.Row="2" Grid.Column="0" Text="篇数"/>
-                <TextBlock Grid.Row="2" Grid.Column="1" Text="字数"/>
-                <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding Path=UserModel.UserConfig.DiaryCount}"/>
-                <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Path=UserModel.UserConfig.WordCount}"/>
-                <TextBlock Grid.Row="4" Grid.Column="0" Text="描述"/>
-                <TextBlock Grid.Row="5" Grid.Column="0" Text="{Binding Path=UserModel.UserConfig.Description}"/>
+                <StackPanel VerticalAlignment="Center" Grid.Row="0" Grid.Column="0" Orientation="Horizontal">
+                    <TextBlock Text="昵称"/>
+                    <TextBlock Margin="10 0" Text="{Binding Path=UserModel.UserConfig.Name}"/>
+                </StackPanel >
+                <StackPanel VerticalAlignment="Center" Grid.Row="0" Grid.Column="1" Orientation="Horizontal">
+                    <TextBlock Text="邮箱"/>
+                    <TextBlock Margin="10 0" Text="{Binding Path=UserModel.UserConfig.UserEmail}"/>
+                </StackPanel>
+                <StackPanel VerticalAlignment="Center" Grid.Row="1" Grid.Column="0" Orientation="Horizontal">
+                    <TextBlock Text="篇数"/>
+                    <TextBlock Margin="10 0" Text="{Binding Path=UserModel.UserConfig.DiaryCount}"/>
+                </StackPanel>
+                <StackPanel VerticalAlignment="Center" Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
+                    <TextBlock Text="字数"/>
+                    <TextBlock Margin="10 0" Text="{Binding Path=UserModel.UserConfig.WordCount}"/>
+                </StackPanel>
             </Grid>
             <StackPanel Grid.Row="2" Margin="10">
+                <TextBlock Margin="10 0" FontSize="16">导出至 SQLite 数据库</TextBlock>
                 <StackPanel Orientation="Vertical" VerticalAlignment="Center">
-
                     <StackPanel Margin="10" Orientation="Horizontal">
                         <TextBlock  VerticalAlignment="Center" FontSize="10">
                             <Run>正在导出：</Run>
@@ -105,22 +118,34 @@
                         <Button Width="100" Height="40"  Margin="5"  VerticalAlignment="Center" Command="{Binding CoExportSqliteCommand}">继续上次导出</Button>
                         <Button Width="100" Height="40"  Margin="5"  VerticalAlignment="Center" Command="{Binding BrExportSqliteCommand}">手动终止导出</Button>
                     </StackPanel>
-                    <StackPanel  HorizontalAlignment="Left">
-                        <StackPanel HorizontalAlignment="Left" Margin="10">
-                            <TextBlock Name="ExportPath" FontSize="10" VerticalAlignment="Center" Text="{Binding ExportPath}" Width="300" />
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal">
-                            <Button Width="80" Height="40" Margin="10" Command="{Binding SelectExportFolderCommand}">选择导出目录</Button>
-                            <Button Width="80" Height="40"  Margin="10"  VerticalAlignment="Center" Command="{Binding ExportToFileCommand}">导出到文件</Button>
-                        </StackPanel>
-                  
+                </StackPanel>
+            </StackPanel>
+            <StackPanel Grid.Row="3">
+                <StackPanel Margin="10" Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBox Text="{Binding DiaryDate}" Width="230" VerticalAlignment="Center" TextAlignment="Left" Height="30" FontSize="20"></TextBox>
+                    <Button Width="100" Height="40"  Margin="5"  VerticalAlignment="Center" Command="{Binding ExportOneSqliteCommand}">单篇日记导出</Button>
+                    <Label Content="eg：2020-01-12" VerticalAlignment="Center" Margin="10 0 0 0"  Padding="0" FontSize="12" />
+
+                </StackPanel>
+            </StackPanel>
+            <StackPanel Grid.Row="4">
+
+                <TextBlock Margin="10 0" FontSize="16">导出至 SQLite 文件</TextBlock>
+                <StackPanel  HorizontalAlignment="Left">
+                    <StackPanel HorizontalAlignment="Left" Margin="10">
+                        <TextBlock Name="ExportPath" FontSize="10" VerticalAlignment="Center" Text="{Binding ExportPath}" Width="300" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Button Width="80" Height="40" Margin="10" Command="{Binding SelectExportFolderCommand}">选择导出目录</Button>
+                        <Button Width="80" Height="40"  Margin="10"  VerticalAlignment="Center" Command="{Binding ExportToFileCommand}">导出到文件</Button>
                     </StackPanel>
 
                 </StackPanel>
             </StackPanel>
-            <StackPanel Grid.Row="3" Margin="10 0">
+            <StackPanel Grid.Row="5" Margin="10 0">
                 <StackPanel  HorizontalAlignment="Left" VerticalAlignment="Center" >
                     <TextBlock FontSize="18">说明：此为非官方导出日记工具，留作自用。</TextBlock>
+                    <TextBlock FontSize="18">说明：已删除的日记内容为 deleted</TextBlock>
                 </StackPanel>
             </StackPanel>
         </Grid>
