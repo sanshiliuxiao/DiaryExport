@@ -8,7 +8,7 @@
         mc:Ignorable="d"
         Name="MainNode"
         WindowStartupLocation="CenterScreen"
-        ResizeMode="NoResize"
+        ResizeMode="CanMinimize"
         Title="你的日记导出工具" Height="650" Width="900">
     <Grid>
         <Grid.ColumnDefinitions>
