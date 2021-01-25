@@ -1,11 +1,6 @@
-﻿using DiaryExport.EFCore;
-using DiaryExport.ModelDtos;
-using DiaryExport.Models;
-using Flurl;
+﻿using DiaryExport.ModelDtos;
 using Flurl.Http;
-using Polly;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 
@@ -51,17 +46,26 @@ namespace DiaryExport.Servies
             try
             {
                 User = await new Flurl.Url(_baseUrl).AppendPathSegment("/login/").PostUrlEncodedAsync(postData).ReceiveJson<UserModel>();
-                _loginModel.Token = $"token {User.Token}";
-                LoginEvent?.Invoke("登录成功");
-                ExportDiaryStatusEvent?.Invoke("登录成功");
-                ResetTryCount();
-                return User;
+                
+                if (User != null && User?.UserConfig != null)
+                {
+                    _loginModel.Token = $"token {User.Token}";
+                    LoginEvent?.Invoke("登录成功");
+                    ExportDiaryStatusEvent?.Invoke("登录成功");
+                    ResetTryCount();
+                    return User;
+                }
+                else
+                {
+                    return default(UserModel);
+                }
+              
   
             }
             catch (Exception)
             {
                 _currentTryCount++;
-                LoginEvent?.Invoke("登陆失败，请检测账号密码或网络");
+                LoginEvent?.Invoke("登陆失败...");
                 ExportDiaryStatusEvent?.Invoke("登陆失败，请检测账号密码或网络");
                 ExportDiaryStatusEvent?.Invoke($"正在第 {_currentTryCount} 次 尝试重新登录");
                 
@@ -73,7 +77,7 @@ namespace DiaryExport.Servies
                 }
                 ExportDiaryStatusEvent?.Invoke("彻底的失败了！");
                 ResetTryCount();
-                return null;
+                return default(UserModel);
             }
         }
         public async Task<DiaryModel> GetLatestDiary()
@@ -85,7 +89,12 @@ namespace DiaryExport.Servies
                                                 .WithHeader("auth", _loginModel.Token)
                                                 .GetAsync()
                                                 .ReceiveJson<DiaryModel>();
-                ExportDiaryStatusEvent?.Invoke($"获取最新一篇日记成功：id: {diaryModel.Diary.Id}");
+
+                if (diaryModel.Diary != null)
+                {
+                    ExportDiaryStatusEvent?.Invoke($"获取最新一篇日记成功：id: {diaryModel.Diary.Id}");
+
+                }
                 ResetTryCount();
                 return diaryModel;
             }
@@ -101,7 +110,7 @@ namespace DiaryExport.Servies
                 }
                 ExportDiaryStatusEvent?.Invoke($"获取最新一篇日记失败...终止获取");
                 ResetTryCount();
-                return null;
+                return default(DiaryModel);
             }
         }
         public async Task<DiaryModel> GetDiaryPrevById(string id)
@@ -137,7 +146,6 @@ namespace DiaryExport.Servies
             }
 
         }
-
         /// <summary>
         /// 
         /// </summary>
@@ -174,7 +182,7 @@ namespace DiaryExport.Servies
                 }
                 ExportDiaryStatusEvent?.Invoke($"获取上一篇日记失败...终止请求");
                 ResetTryCount();
-                return null;
+                return default(DiaryModel);
             }
         }
     }
