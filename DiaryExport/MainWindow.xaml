@@ -18,8 +18,8 @@
         <Grid Grid.Column="0">
             <Grid.RowDefinitions>
                 <RowDefinition  Height="120"/>
-                <RowDefinition Height="120"/>
-                <RowDefinition Height="120"/>
+                <RowDefinition Height="100"/>
+                <RowDefinition Height="140"/>
                 <RowDefinition Height="80"/>
                 <RowDefinition Height="120"/>
                 <RowDefinition Height="100"/>
@@ -130,7 +130,7 @@
             </StackPanel>
             <StackPanel Grid.Row="4">
 
-                <TextBlock Margin="10 0" FontSize="16">导出至 SQLite 文件</TextBlock>
+                <TextBlock Margin="10 0" FontSize="16">导出至 文本 文件</TextBlock>
                 <StackPanel  HorizontalAlignment="Left">
                     <StackPanel HorizontalAlignment="Left" Margin="10">
                         <TextBlock Name="ExportPath" FontSize="10" VerticalAlignment="Center" Text="{Binding ExportPath}" Width="300" />

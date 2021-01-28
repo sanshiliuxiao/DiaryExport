@@ -574,6 +574,7 @@ namespace DiaryExport.ViewModels
                 {
                     await _dbServices.AddOneUserInfoAsync(UserModel.UserConfig);
                     ExportDiaryStatusChange("用户信息已存入 SQLite 数据库");
+                    ExportedCount = 0;
                 }
                 else
                 {
@@ -586,8 +587,9 @@ namespace DiaryExport.ViewModels
                     user.Description = user.Description;
                     user.DiaryCount = user.DiaryCount;
                     await _dbServices.SaveAsync();
+
+                    ExportedCount = _dbServices.GetCurrentUserInSqliteDiaryCount(user.Id);
                 }
-                ExportedCount = _dbServices.GetCurrentUserInSqliteDiaryCount(user.Id);
             }
         }
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
